@@ -1,0 +1,52 @@
+# Database Connection Walkthrough
+
+This document outlines the modifications made to connect the backend application to the PostgreSQL database, validate credentials at startup, auto-initialize the schema if needed, and run a health check.
+
+## Changes Made
+
+### Configuration and DB Utilities
+
+#### [NEW] [db.config.js](file:///d:/AIML_learning_Projects/app-Org-EventManager/backend/src/configs/db.config.js)
+- Established structured validation of all database connection parameters from `.env`.
+- Explicitly checks for missing environment variables and throws clear error messages.
+- Parses and type-casts numeric pool limits.
+
+#### [MODIFY] [db.js](file:///d:/AIML_learning_Projects/app-Org-EventManager/backend/database/db.js)
+- Replaced direct `process.env` lookups with the validated parameters from `db.config.js`.
+- Implemented `initializeDatabase()` utility which:
+  1. Tests connectivity to the database.
+  2. Queries public schema tables.
+  3. If 0 tables are found, automatically reads and executes [schema.sql](file:///d:/AIML_learning_Projects/app-Org-EventManager/backend/database/schema.sql).
+
+### Express Application Server
+
+#### [MODIFY] [server.js](file:///d:/AIML_learning_Projects/app-Org-EventManager/backend/src/server.js)
+- Integrated Express application setup with JSON parser and CORS middlewares.
+- Added database connection and initialization call at startup (with Fail-Fast mechanism).
+- Implemented a `/api/health` endpoint returning database connection health dynamically.
+
+---
+
+## Verification Results
+
+### Server Startup Output
+When running the Express application, the database connectivity was verified, tables check was executed, and port listener successfully started:
+```text
+Testing database connection...
+New client connected to PostgreSQL pool
+Database connection verified: "app_cu_event_portal"
+Database is already initialized with 18 table(s).
+Server is running on port 5000
+Health check available at http://localhost:5000/api/health
+```
+
+### Health Check Endpoint
+Querying `http://localhost:5000/api/health` returned the following JSON:
+```json
+{
+  "status": "UP",
+  "message": "Server is running and database is connected.",
+  "timestamp": "2026-06-22T06:29:44.807Z",
+  "database": "CONNECTED"
+}
+```

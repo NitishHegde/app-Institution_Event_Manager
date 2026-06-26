@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+/* Custom thin dark scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #030303;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #262626;
+    /* neutral-800 */
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #404040;
+    /* neutral-700 */
+}
+
+/* Firefox */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: #262626 #030303;
+}
+
+html, body {
+    background-color: #030303;
+    color: #E5E5E5;
+    margin: 0;
+    padding: 0;
+}
